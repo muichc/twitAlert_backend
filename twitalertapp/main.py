@@ -1,14 +1,17 @@
 from flask import Flask, send_from_directory, jsonify, Blueprint, request
 from.extensions import mongo
+from flask_jwt_extended import (create_access_token, create_refresh_token,
+                                jwt_required, get_jwt_identity)
+
 
 main = Blueprint('main', __name__)
 
 
-@main.route('/')
-def index():
+@main.route('/users', methods=["GET"])
+def get_all_users():
     user_collection = mongo.db.users
-    user_collection.insert({'name':'Anthony'})
-    return '<h1>Added a User! </h1>'
+    return jsonify(user_collection)
 
-# if __name__ == "__main__":
-#     app.run()
+@main.route('/user', methods=["POST"])
+def add_user():
+    
