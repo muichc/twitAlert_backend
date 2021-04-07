@@ -1,0 +1,1 @@
+from .model import validate_user
