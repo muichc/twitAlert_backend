@@ -24,11 +24,11 @@ def login():
             del user['password']
             access_token = create_access_token(identity=str(user["_id"]))
             user['token'] = access_token
-            return jsonify({'ok': True, 'data': user}), 200
+            return jsonify({'ok': True, 'message': 'Success', 'data': user}), 200
         else:
-            return jsonify({'ok': False, 'message': 'invalid username or password'}), 401
+            return jsonify({'ok': False, 'message': 'Invalid username or password'}), 401
     else:
-        return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['message'])}), 400
+        return jsonify({'ok': False, 'message': f"Bad request parameters: {data['message']}"}), 400
 
 
 @auth.route('/auth/register', methods=["POST"])
@@ -47,6 +47,15 @@ def register():
             return jsonify({'ok':False, 'message': 'User already exists'})
     else:
         return jsonify({'ok': False, 'message': f"Bad request parameters: {data['message']}"}), 400
+
+@auth.route('/auth/profile', methods=["GET"])
+@jwt_required(refresh=False, locations=['headers'])
+def get_profile():
+    current_user = get_jwt_identity()
+    user = mongo.db.users.find_one({"_id": current_user})
+    if user:
+        del user["password"]
+        return jsonify({'ok': True, 'data': user}), 200
 
 
 @auth.route('/user', methods=['GET', 'DELETE', 'PUT'])

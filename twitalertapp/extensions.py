@@ -1,6 +1,7 @@
 from flask_pymongo import PyMongo
 from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 import datetime
 import json
 from bson.objectid import ObjectId
@@ -21,3 +22,4 @@ class JSONEncoder(json.JSONEncoder):
 mongo = PyMongo()
 jwt = JWTManager()
 flask_bcrypt = Bcrypt()
+cors = CORS()

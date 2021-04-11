@@ -1,5 +1,5 @@
 from flask import Flask
-from .extensions import mongo, jwt, flask_bcrypt
+from .extensions import mongo, jwt, flask_bcrypt, cors
 from .main import main
 import datetime
 
@@ -14,6 +14,7 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(days=7)
 mongo.init_app(app)
 jwt.init_app(app)
 flask_bcrypt.init_app(app)
+cors.init_app(app)
 
 
 app.register_blueprint(main)
