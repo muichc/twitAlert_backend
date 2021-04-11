@@ -19,6 +19,7 @@ flask_bcrypt.init_app(app)
 app.register_blueprint(main)
 from . import controllers
 app.register_blueprint(controllers.auth)
+app.register_blueprint(controllers.tweet)
 
 
 

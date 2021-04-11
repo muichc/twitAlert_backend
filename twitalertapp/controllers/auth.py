@@ -1,7 +1,8 @@
+import uuid
 from flask import request, jsonify, Blueprint
 from flask_jwt_extended import create_access_token,jwt_required, get_jwt_identity
 from twitalertapp.extensions import mongo, flask_bcrypt, jwt, JSONEncoder
-from ..user import validate_user
+from ..user import validate_user_login, validate_user_registration
 
 auth = Blueprint('auth', __name__)
 
@@ -14,7 +15,7 @@ def unauthorized_response(callback):
 
 @auth.route('/auth/login', methods=["POST"])
 def login():
-    data = validate_user(request.get_json())
+    data = validate_user_login(request.get_json())
     if data['ok']:
         data = data['data']
         user = mongo.db.users.find_one({'email':data['email']}) 
@@ -32,29 +33,30 @@ def login():
 
 @auth.route('/auth/register', methods=["POST"])
 def register():
-    data = validate_user(request.get_json())
+    data = validate_user_registration(request.get_json())
     if data['ok']:
         data = data['data']
         user = mongo.db.users.find_one({'email':data['email']})
         if not user:
+            data['_id'] = str(uuid.uuid4())
             data['password'] = flask_bcrypt.generate_password_hash(data['password'])
+            print(data['_id'])
             mongo.db.users.insert_one(data)
             return jsonify({'ok': True, 'message': 'User created successfully!'}), 200
         else:
             return jsonify({'ok':False, 'message': 'User already exists'})
     else:
-        return jsonify({'ok': False, 'message': 'Bad request parameters: {}'.format(data['message'])}), 400
+        return jsonify({'ok': False, 'message': f"Bad request parameters: {data['message']}"}), 400
 
 
 @auth.route('/user', methods=['GET', 'DELETE', 'PUT'])
 @jwt_required(refresh=False, locations=['headers'])
 def user():
     if request.method == 'GET':
-        query = request.args
-        data = mongo.db.users.find_one(query, {"_id": 0})
+        current_user = get_jwt_identity()
+        data = mongo.db.users.find_one({"_id": current_user})
         if data:
             del data['password']
-        # data["_id"] = str(data["_id"])
         return jsonify({'ok': True, 'data': data}), 200
 
     data = request.get_json()
@@ -78,3 +80,4 @@ def user():
         else:
             return jsonify({'ok': False, 'message': 'Bad request parameters!'}), 400
 
+#Most of the authentication functions were based on this tutorial https://medium.com/@riken.mehta/full-stack-tutorial-3-flask-jwt-e759d2ee5727
