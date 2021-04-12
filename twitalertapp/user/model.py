@@ -6,9 +6,6 @@ from jsonschema.exceptions import SchemaError
 user_registration_schema = {
     "type":"object",
     "properties":{
-        "name": {
-            "type":"string",
-        },
         "username": {
             "type":"string",
         },
@@ -32,7 +29,27 @@ user_registration_schema = {
 user_login_schema = {
     "type":"object",
     "properties":{
-        "name": {
+        "email": {
+            "type":"string",
+            "format":"email"
+        },
+        "password": {
+            "type":"string",
+            "minLength": 5
+        },
+    },
+    "required": ["email", "password"],
+    "additionalProperties":False
+}
+
+# Not doing anything with this right now, but for future purposes
+user_login_schema = {
+    "type":"object",
+    "properties":{
+        "firstName": {
+            "type":"string",
+        },
+        "lastName": {
             "type":"string",
         },
         "username": {
@@ -49,9 +66,11 @@ user_login_schema = {
         "location": {
             "type":"integer",
             "minLength":5
+        },
+        "locationName": {
+            "type":"string",
         }
     },
-    "required": ["email", "password"],
     "additionalProperties":False
 }
 
