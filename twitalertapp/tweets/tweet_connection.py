@@ -104,20 +104,12 @@ def sentiment_scores(headers, sentiment_url, document_format):
         response = requests.post(sentiment_url, headers=headers, json=request_doc)
         response_json = response.json()
         sentiment_list += response_json["documents"]
-    # print("HELLOOOOO ========", sentiment_list, "Length is ", len(sentiment_list))
-    # sentiment_list_df = pd.DataFrame(sentiment_list)
-    # print(sentiment_list_df)
     sentiment_list_filtered = list(filter(lambda dict: dict["sentiment"] == "negative", sentiment_list))
-    # print("Length of sentiment list is now ", len(sentiment_list_filtered), " Sentiment list is ", sentiment_list_filtered)
-    # sentiment_list_filtered_df = pd.DataFrame(sentiment_list_filtered)
-    # print(sentiment_list_filtered_df)
     return sentiment_list_filtered
 
 def filter_tweets(tweets_json, sentiment_list_filtered):
     tweets_doc = tweets_json["data"]
-    # print("tweets in doc format >>>>>>>>>>>>>>>", tweets_doc)
     filtered_tweets = [tweet for tweet in tweets_doc for sentiment in sentiment_list_filtered if sentiment["id"] == tweet["id"]]
-    # print("THE FILTERED TWEETS ARE ", filtered_tweets, " THE LENGTH OF TWEETS LIST IS ", len(filtered_tweets))
     return filtered_tweets
 
 

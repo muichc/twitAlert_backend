@@ -10,6 +10,6 @@ def get_all_users():
     user_collection = mongo.db.users
     return jsonify(user_collection)
 
-# @main.route('/')
+# This file is not really necessary as of now and will be deprecated in the future if necessary
 
 

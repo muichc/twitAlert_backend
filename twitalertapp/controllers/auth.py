@@ -58,16 +58,9 @@ def get_profile():
         return jsonify({'ok': True, 'data': user}), 200
 
 
-@auth.route('/user', methods=['GET', 'DELETE', 'PUT'])
+@auth.route('/user', methods=['DELETE', 'PUT'])
 @jwt_required(refresh=False, locations=['headers'])
 def user():
-    if request.method == 'GET':
-        current_user = get_jwt_identity()
-        data = mongo.db.users.find_one({"_id": current_user})
-        if data:
-            del data['password']
-        return jsonify({'ok': True, 'data': data}), 200
-
     data = request.get_json()
     if request.method == 'DELETE':
         if data.get('email', None) is not None:
