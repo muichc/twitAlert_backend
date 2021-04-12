@@ -13,7 +13,8 @@ tweet = Blueprint('tweet', __name__)
 def get_tweets():
     current_user_id = get_jwt_identity()
     current_user = mongo.db.users.find_one({'_id': current_user_id})
-    if current_user["locationName"]:
+    location_key = "locationName"
+    if location_key in current_user:
         print(current_user["locationName"])
         location = current_user["locationName"]
     else:
