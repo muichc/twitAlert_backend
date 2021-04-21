@@ -18,7 +18,7 @@ import urllib.parse
 #################################
 
 def create_twitter_url(location="San Francisco"):
-    max_results = 20
+    max_results = 100
     mrf = f"max_results={max_results}"
     search = urllib.parse.quote("car crash OR fire OR tornado OR earthquake")
     search = "(" + search +")"

@@ -13,4 +13,4 @@ htmlcov/
 dist/
 build/
 *.egg-info/
-*/config.yaml
+*/*/config.yaml

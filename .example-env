@@ -2,3 +2,6 @@ FLASK_APP=twitalertapp
 FLASK_ENV=development
 MONGODB_URI=ongodb+srv://admin:examplepassword@examplesandbox.9wdjx.mongodb.net/exampleDB?retryWrites=true&w=majority
 SECRET=THISISVERYSECRETYOUWILLNEVERGUESSITHAHAHAHAHAHA
+ZIP_API=<insert API key here>
+ZIP_API_EMAIL=<insert email associated with Zip API here>
+ZIP_API_PASSWORD=<insert password associated with Zip API here>
