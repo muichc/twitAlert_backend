@@ -2,6 +2,7 @@ import uuid
 from flask import request, jsonify, Blueprint
 from flask_jwt_extended import create_access_token,jwt_required, get_jwt_identity
 from twitalertapp.extensions import mongo, flask_bcrypt, jwt, JSONEncoder
+from twitalertapp.service import get_location_name
 from ..user import validate_user_login, validate_user_registration
 
 auth = Blueprint('auth', __name__)
@@ -19,7 +20,8 @@ def login():
     if data['ok']:
         data = data['data']
         user = mongo.db.users.find_one({'email':data['email']}) 
-        user["_id"] = str(user["_id"])
+        if type(user["_id"]) is not str:
+            user["_id"]= str(user["_id"])
         if user and flask_bcrypt.check_password_hash(user['password'], data['password']):
             del user['password']
             access_token = create_access_token(identity=str(user["_id"]))
@@ -41,7 +43,11 @@ def register():
             data['_id'] = str(uuid.uuid4())
             data['password'] = flask_bcrypt.generate_password_hash(data['password'])
             print(data['_id'])
-            mongo.db.users.insert_one(data)
+            result = mongo.db.users.insert_one(data)
+            user = mongo.db.users.find_one({'_id': result.inserted_id})
+            location_key = "locationName"
+            if location_key not in user:
+                get_location_name(result.inserted_id)
             return jsonify({'ok': True, 'message': 'User created successfully!'}), 200
         else:
             return jsonify({'ok':False, 'message': 'User already exists'})
@@ -50,7 +56,7 @@ def register():
 
 @auth.route('/auth/verify', methods=["GET"])
 @jwt_required(refresh=False, locations=['headers'])
-def get_profile():
+def verify():
     current_user = get_jwt_identity()
     user = mongo.db.users.find_one({"_id": current_user})
     if user:
