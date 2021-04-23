@@ -22,5 +22,4 @@ class JSONEncoder(json.JSONEncoder):
 mongo = PyMongo()
 jwt = JWTManager()
 flask_bcrypt = Bcrypt()
-# cors = CORS(resources = {r"/*": {"origins": "http://localhost:3000"}})
 cors = CORS()

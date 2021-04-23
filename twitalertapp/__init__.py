@@ -17,6 +17,7 @@ flask_bcrypt.init_app(app)
 cors.init_app(app)
 
 
+
 app.register_blueprint(main)
 
 from . import controllers

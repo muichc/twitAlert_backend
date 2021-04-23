@@ -1,12 +1,10 @@
 import uuid
 from flask import request, jsonify, Blueprint
 from flask_jwt_extended import create_access_token,jwt_required, get_jwt_identity
-from flask_cors import CORS, cross_origin
 from twitalertapp.extensions import mongo, flask_bcrypt, jwt, JSONEncoder
 from ..user import validate_user_login, validate_user_registration
 
 auth = Blueprint('auth', __name__)
-# auth_cors = CORS(auth)
 
 @jwt.unauthorized_loader
 def unauthorized_response(callback):
@@ -62,12 +60,9 @@ def get_profile():
 
 @auth.route('/user', methods=['DELETE', 'PUT'])
 @jwt_required(refresh=False, locations=['headers'])
-# @cross_origin(origin='localhost', headers=['Content-Type', 'Authorization'])
 def user():
-    print("hi did we get here")
     data = request.get_json()
     if request.method == 'DELETE':
-        print("we got here!")
         if data.get('email', None) is not None:
             db_response = mongo.db.users.delete_one({'email': data['email']})
             if db_response.deleted_count == 1:
@@ -79,7 +74,7 @@ def user():
             return jsonify({'ok': False, 'message': 'Bad request parameters!'}), 400
 
     if request.method == 'PUT':
-        user_info=request.args
+        
         if data.get('payload', {}) != {}:
             mongo.db.users.update_one(
                 user_info, {'$set': data.get('payload', {})})
