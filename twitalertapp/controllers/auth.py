@@ -20,9 +20,9 @@ def login():
     if data['ok']:
         data = data['data']
         user = mongo.db.users.find_one({'email':data['email']}) 
-        if type(user["_id"]) is not str:
-            user["_id"]= str(user["_id"])
         if user and flask_bcrypt.check_password_hash(user['password'], data['password']):
+            if type(user["_id"]) is not str:
+                user["_id"]= str(user["_id"])
             location_key = "locationName"
             if location_key not in user:
                 get_location_name(user["_id"])
