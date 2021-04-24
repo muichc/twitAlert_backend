@@ -23,6 +23,9 @@ def login():
         if type(user["_id"]) is not str:
             user["_id"]= str(user["_id"])
         if user and flask_bcrypt.check_password_hash(user['password'], data['password']):
+            location_key = "locationName"
+            if location_key not in user:
+                get_location_name(user["_id"])
             del user['password']
             access_token = create_access_token(identity=str(user["_id"]))
             user['token'] = access_token
