@@ -1,7 +1,7 @@
 from flask import jsonify, Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from twitalertapp.extensions import mongo, jwt
-from twitalertapp.tweets import tweet_main
+from twitalertapp.tweets import tweets_main
 
 
 tweet = Blueprint('tweet', __name__)
@@ -20,7 +20,7 @@ def get_tweets():
     else:
         location = user[location_key]
         try:
-            tweets = tweet_main(location)
+            tweets = tweets_main(location)
             return jsonify({"data": tweets}), 200
         except:
             return jsonify({"ok":False, "message":"Error retrieving tweets"})

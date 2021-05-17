@@ -1,8 +1,5 @@
 import os
-import pandas as pd 
 import json
-import ast
-import yaml
 import requests
 import urllib.parse
 import tweet_auth as tweet
@@ -84,15 +81,14 @@ def analyze(natural_language_understanding, tweets):
                 keywords=KeywordsOptions(sentiment=True,limit=2),
                 categories=CategoriesOptions(explanation=True,limit=3)
                 )).get_result()
-            # print(json.dumps(response, indent=2))  
             response_json = json.dumps(response)
-            if response["categories"][0]["score"] > 0.8 and check_categories(response["categories"][0]["label"]):
+            if response["categories"][0]["score"] > 0.75 and check_categories(response["categories"][0]["label"]):
                 sentiment_list += [tweet, response_json]
                 print("sentiment list at the end of one tweet")
                 print(sentiment_list)
     except Exception as e:
         print("json response was not filtered properly", e)
-        
+    return sentiment_list
 
 #################################
 # Main
@@ -105,7 +101,8 @@ def tweets_main(location="San Francisco"):
     res_json = twitter_auth_and_connect(bearer_token, url)
     authenticator = build_authenticator(data)
     natural_language_understanding = build_ibm_url(authenticator, data)
-    analyze(natural_language_understanding, res_json)
+    sentiments = analyze(natural_language_understanding, res_json)
+    return sentiments
 
 if __name__ == "__main__":
     tweets_main()
