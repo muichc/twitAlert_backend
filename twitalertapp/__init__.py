@@ -1,5 +1,6 @@
 from flask import Flask
 from .extensions import mongo, jwt, flask_bcrypt, cors
+from .tweets import tweet_auth
 from .main import main
 import datetime
 

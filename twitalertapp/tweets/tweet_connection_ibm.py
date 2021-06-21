@@ -2,13 +2,10 @@ import os
 import json
 import requests
 import urllib.parse
-import tweet_auth as tweet
+from .tweet_auth import *
 from ibm_watson import NaturalLanguageUnderstandingV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_watson.natural_language_understanding_v1 import Features, EntitiesOptions, KeywordsOptions, CategoriesOptions
-
-# ############## The connections to the twitter were based on 
-# https://developer.twitter.com/en/docs/tutorials/how-to-analyze-the-sentiment-of-your-own-tweets
 
 
 #################################
@@ -18,7 +15,7 @@ from ibm_watson.natural_language_understanding_v1 import Features, EntitiesOptio
 def create_twitter_url(location="San Francisco"):
     max_results = 10
     mrf = f"max_results={max_results}"
-    search = urllib.parse.quote("car crash OR fire OR tornado OR earthquake OR flood")
+    search = urllib.parse.quote("car crash OR fire OR tornado OR earthquake OR flood OR disaster OR natural disaster OR tsunami")
     search = "(" + search +")"
     query = urllib.parse.quote(f'-is:retweet entity:"{location}"')
     query = "query=" + search + query
@@ -36,7 +33,7 @@ def twitter_auth_and_connect(bearer_token, url):
 
 def check_categories(string):
     """
-    Checks if a our desired categories is contained within the category string of returned results
+    Checks if our desired categories is contained within the category string of returned results
 
     >>> check_categories("/family and parenting/babies and toddlers/baby clothes")
     False
@@ -68,9 +65,8 @@ def analyze(natural_language_understanding, tweets):
     sentiment_list = []
     try:
         tweets = tweets['data']
-        print(tweets)
-    except:
-        print("tweets were not returned correctly")
+    except Exception as error:
+        print("tweets were not returned correctly", error)
     try:
         for tweet in tweets:
             tweet_text = tweet["text"]
@@ -81,13 +77,15 @@ def analyze(natural_language_understanding, tweets):
                 keywords=KeywordsOptions(sentiment=True,limit=2),
                 categories=CategoriesOptions(explanation=True,limit=3)
                 )).get_result()
-            response_json = json.dumps(response)
             if response["categories"][0]["score"] > 0.75 and check_categories(response["categories"][0]["label"]):
-                sentiment_list += [tweet, response_json]
-                print("sentiment list at the end of one tweet")
-                print(sentiment_list)
+                print("response json is like this right now")
+                print(response)
+                new_tweet_list = [tweet, response]
+                sentiment_list.append(new_tweet_list) 
     except Exception as e:
         print("json response was not filtered properly", e)
+    print("sentiment list at the end")
+    print(sentiment_list)
     return sentiment_list
 
 #################################
@@ -96,8 +94,8 @@ def analyze(natural_language_understanding, tweets):
 
 def tweets_main(location="San Francisco"):
     url = create_twitter_url(location)
-    data = tweet.process_yaml()
-    bearer_token = tweet.create_bearer_token(data)
+    data = process_yaml()
+    bearer_token = create_bearer_token(data)
     res_json = twitter_auth_and_connect(bearer_token, url)
     authenticator = build_authenticator(data)
     natural_language_understanding = build_ibm_url(authenticator, data)

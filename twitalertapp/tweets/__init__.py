@@ -1,2 +1,2 @@
-from .tweet_connection import tweet_main
+from .tweet_connection_ibm import tweets_main
 from .tweet_auth import *
